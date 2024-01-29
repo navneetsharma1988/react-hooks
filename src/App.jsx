@@ -1,45 +1,68 @@
 import { useState } from "react";
-import { useToggle } from "./useToggle";
+import { useFetch } from "./useFetch";
+
+const URLS = {
+  USERS: "https://jsonplaceholder.typicode.com/users",
+  POSTS: "https://jsonplaceholder.typicode.com/posts",
+  COMMENTS: "https://jsonplaceholder.typicode.com/comments",
+};
 
 function App() {
-  const nameInput = useInputValue();
-  const [isDarkMode, toggle] = useToggle();
-  // const [isDarkMode, setIsDarkMode] = useState(false);
+  const [url, setUrl] = useState(URLS.USERS)
+  // const OPTIONS = {
+  //   method: "POST",
+  //   headers: {
+  //     "Content-Type": "application/json",
+  //   },
+  //   body: JSON.stringify({
+  //     name: "morpheus",
+  //     job: "leader",
+  //   }),
+  // };
+
+  const { data, isLoading, isError } = useFetch(url)
+  // BONUS:
+  // const { data, isLoading, isError } = useFetch(url, OPTIONS)
 
   return (
     <>
-      <div
-        style={{
-          backgroundColor: isDarkMode ? "#000" : "#fff",
-          color: isDarkMode ? "#fff" : "#000",
-          minHeight: "100vh",
-          padding: "2rem",
-        }}
-      >
-        <label htmlFor="">
-          Name:
+      <div>
+        <label>
           <input
-            type="text"
-            {...nameInput}
+            type="radio"
+            checked={url === URLS.USERS}
+            onChange={() => setUrl(URLS.USERS)}
           />
+          Users
         </label>
-        <br />
-        <br />
-        <button onClick={toggle}>Change Mode</button>
+        <label>
+          <input
+            type="radio"
+            checked={url === URLS.POSTS}
+            onChange={() => setUrl(URLS.POSTS)}
+          />
+          Posts
+        </label>
+        <label>
+          <input
+            type="radio"
+            checked={url === URLS.COMMENTS}
+            onChange={() => setUrl(URLS.COMMENTS)}
+          />
+          Comments
+        </label>
       </div>
+      {isLoading ? (
+        <h1>Loading...</h1>
+      ) : isError ? (
+        <h1>Error</h1>
+      ) : (
+        <pre>{JSON.stringify(data, null, 2)}</pre>
+      )}
     </>
-  );
+  )
 }
 
-
-function useInputValue(initailValue = "") {
-  const [value, setValue] = useState(initailValue);
-  return {
-    value,
-    onChange: (e) => setValue(e.target.value),
-    resetValue: () => setValue(""),
-  };
-}
 
 
 
